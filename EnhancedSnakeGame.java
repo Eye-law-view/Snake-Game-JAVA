@@ -7,12 +7,10 @@ import java.awt.event.KeyEvent;
 import java.util.LinkedList;
 import java.util.Random;
 
-public class SnakeGame extends JPanel implements ActionListener {
+public class EnhancedSnakeGame extends JPanel implements ActionListener {
     private final int WIDTH = 600;
     private final int HEIGHT = 400;
-    private final int DOT_SIZE = 10;
-    private final int ALL_DOTS = (WIDTH * HEIGHT) / (DOT_SIZE * DOT_SIZE);
-    
+    private final int DOT_SIZE = 20; // Increased size for better visibility
     private LinkedList<Point> snake; // Snake body
     private Point food; // Food position
     private char direction; // Current direction of the snake
@@ -20,9 +18,9 @@ public class SnakeGame extends JPanel implements ActionListener {
     private Timer timer; // Timer for game loop
     private Random random;
 
-    public SnakeGame() {
+    public EnhancedSnakeGame() {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        setBackground(Color.BLACK);
+        setBackground(new Color(30, 30, 30)); // Dark background for contrast
         setFocusable(true);
         addKeyListener(new KeyAdapter() {
             @Override
@@ -71,21 +69,37 @@ public class SnakeGame extends JPanel implements ActionListener {
         super.paintComponent(g);
         
         if (running) {
-            g.setColor(Color.RED);
-            g.fillRect(food.x * DOT_SIZE, food.y * DOT_SIZE, DOT_SIZE, DOT_SIZE); // Draw food
-            
-            g.setColor(Color.GREEN);
-            for (Point p : snake) {
-                g.fillRect(p.x * DOT_SIZE, p.y * DOT_SIZE, DOT_SIZE, DOT_SIZE); // Draw snake
-            }
-            
-            g.setColor(Color.WHITE);
-            g.drawString("Score: " + (snake.size() - 1), 10, 10); // Display score
+            drawFood(g);
+            drawSnake(g);
+            drawScore(g);
         } else {
             showGameOver(g);
         }
         
         Toolkit.getDefaultToolkit().sync(); // Sync the graphics
+    }
+
+    private void drawFood(Graphics g) {
+        g.setColor(Color.RED);
+        g.fillRoundRect(food.x * DOT_SIZE, food.y * DOT_SIZE, DOT_SIZE, DOT_SIZE, 10, 10); // Rounded food
+    }
+
+    private void drawSnake(Graphics g) {
+        for (int i = 0; i < snake.size(); i++) {
+            Point p = snake.get(i);
+            if (i == 0) { // Head of the snake
+                g.setColor(new Color(0, 200, 0)); // Bright green for head
+                g.fillRoundRect(p.x * DOT_SIZE, p.y * DOT_SIZE, DOT_SIZE, DOT_SIZE, 10, 10); 
+            } else { // Body of the snake
+                g.setColor(new Color(0, 150, 0)); // Darker green for body
+                g.fillRoundRect(p.x * DOT_SIZE, p.y * DOT_SIZE, DOT_SIZE, DOT_SIZE, 10, 10); 
+            }
+        }
+    }
+
+    private void drawScore(Graphics g) {
+        g.setColor(Color.WHITE);
+        g.drawString("Score: " + (snake.size() - 1), 10, 20); // Display score
     }
 
     private void showGameOver(Graphics g) {
@@ -143,16 +157,15 @@ public class SnakeGame extends JPanel implements ActionListener {
 
         if (head.equals(food)) { // If the snake eats the food
             spawnFood(); // Spawn new food
-            // Grow the snake by adding a new segment at the end
-            snake.add(new Point(-1, -1)); 
+            snake.add(new Point(-1, -1)); // Grow the snake by adding a new segment at the end
         } else {
             snake.removeLast(); // Remove last segment of the snake if not eating food
         }
     }
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Snake Game");
-        SnakeGame gamePanel = new SnakeGame();
+        JFrame frame = new JFrame("Enhanced Snake Game");
+        EnhancedSnakeGame gamePanel = new EnhancedSnakeGame();
         
         frame.add(gamePanel);
         frame.pack();
